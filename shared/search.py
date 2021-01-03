@@ -108,7 +108,7 @@ class CryptoMonitor(discord.Client):
 
 
     async def act(self, old_vals=None):
-        prices, old_vals, in_alarm = await self.get_human_search_results(old_vals)
+        prices, old_vals, in_alarm = self.get_human_search_results(old_vals)
         text_channel_list = []
         for guild in self.guilds:
             for channel in guild.text_channels:
