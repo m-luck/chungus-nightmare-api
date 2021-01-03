@@ -132,7 +132,8 @@ class CryptoMonitor(discord.Client):
             for channel in guild.text_channels:
                 if channel.name == 'shitcoins-hyperchin-x':
                     with channel.typing():
-                        await channel.send('This shitptocurrency markets are open and it is daytime in California. Now changing update interval to 20 minutes -')
+                        await channel.send(
+                            f'This shitptocurrency markets are open and it is daytime in California. Now changing update interval to 20 minutes -\If percentage changes more than {self.alarm_threshold:.2f} percent within this interval, it will 💥.')
         old_vals = await self.act()
         every_n_seconds = 20 * 60
         beat.set_rate(1/every_n_seconds)
