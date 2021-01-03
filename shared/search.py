@@ -79,7 +79,7 @@ class TwitterMonitor(discord.Client):
 
 class CryptoMonitor(discord.Client):
 
-    alarm_threshold = 1.2  # 1% in 20 minutes is yuge.
+    alarm_threshold = 1.2 * 6  # 1% in 20 minutes is yuge.
     alarm_emoji = '💥' 
     tickers = [
         'BTC',
@@ -128,22 +128,41 @@ class CryptoMonitor(discord.Client):
         print(self.user.id)
         print('------')
 
+        for guild in self.guilds:
+            for channel in guild.text_channels:
+                if channel.name == 'shitcoins-hyperchin-x':
+                    with channel.typing():
+                        await channel.send('I have been told it is nighttime. Shortening update interval to every 2 hours.')
         old_vals = await self.act()
-        every_n_seconds = 20 * 60
+        every_n_seconds = 20 * 60 * 6
         beat.set_rate(1/every_n_seconds)
         while beat.true():
             new_vals = await self.act(old_vals=old_vals)
             old_vals = new_vals
             beat.sleep() 
 
-
     async def act(self, old_vals=None):
         prices, old_vals, in_alarm = self.get_human_search_results(old_vals)
         text_channel_list = []
         for guild in self.guilds:
             for channel in guild.text_channels:
-                if channel.name == 'marmot':
+                if channel.name == 'shitcoins-hyperchin-x':
                     with channel.typing():
                         await channel.send(prices)
                         return old_vals
     
+    # async def on_message(self, message):
+    #     if (
+    #         message.author.id == self.user.id or 
+    #         not message.channel.name.startswith('marmot')
+    #     ):
+    #         return
+
+    #     prompt = self.clean_input(message)
+    #     print("PROMPT:", prompt)
+    #     async with message.channel.typing():
+    #         response = self.get_human_search_results(prompt)
+    #         print("RESPONSE:", response)
+    #         if not response: 
+    #             response = ".."
+    #         await message.channel.send(response)
