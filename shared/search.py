@@ -74,6 +74,7 @@ class CryptoMonitor(discord.Client):
             in prices.items()
         ] 
 
+        suffixes = []
         if price_perc_diff:
             prefixes = ['+' if diff > 0 else '' for diff in price_perc_diff] 
             suffixes = [
