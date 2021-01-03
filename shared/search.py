@@ -79,7 +79,7 @@ class TwitterMonitor(discord.Client):
 
 class CryptoMonitor(discord.Client):
 
-    alarm_threshold = 1.2 * 6  # 1% in 20 minutes is yuge.
+    alarm_threshold = 1.2  # 1% in 20 minutes is yuge.
     alarm_emoji = '💥' 
     tickers = [
         'BTC',
@@ -132,9 +132,9 @@ class CryptoMonitor(discord.Client):
             for channel in guild.text_channels:
                 if channel.name == 'shitcoins-hyperchin-x':
                     with channel.typing():
-                        await channel.send('I have been told it is nighttime. Shortening update interval to every 2 hours.')
+                        await channel.send('This shitptocurrency markets are open and it is daytime in California. Now changing update interval to 20 minutes -')
         old_vals = await self.act()
-        every_n_seconds = 20 * 60 * 6
+        every_n_seconds = 20 * 60
         beat.set_rate(1/every_n_seconds)
         while beat.true():
             new_vals = await self.act(old_vals=old_vals)
