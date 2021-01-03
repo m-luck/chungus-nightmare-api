@@ -3,7 +3,7 @@ import time
 import discord
 import gptreplyguy.gpt_helpers as gpt_helpers
 
-one_in = 10
+one_in = 1
 
 class GPTReplyGuy(discord.Client):
     async def on_ready(self):
@@ -20,6 +20,7 @@ class GPTReplyGuy(discord.Client):
             return
 
         async with message.channel.typing():
+            # chance = random.randint(1,one_in)
             chance = one_in
             if one_in == chance:
                 uni_ = ''.join([i if ord(i) < 128 else '' for i in str(message.content)])

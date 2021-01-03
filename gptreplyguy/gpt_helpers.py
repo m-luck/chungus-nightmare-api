@@ -18,7 +18,7 @@ def get_gpt_output(prompt):
         'text-generation',
         'run_generation.py'
     )
-    length = 400
+    length = 200
     command = f'py {generator_path} --model_type gpt2 --model_name_or_path gpt2 --prompt "{prompt}" --length {length}'
     output = subprocess.check_output(command, shell=True)
     return output
@@ -42,7 +42,7 @@ def get_punctuation(val):
 def get_final_response(sentences, n=4):
     seed = random.randint(1,4)
     punctuation = get_punctuation(seed)
-    return '. '.join(sentences[0:n-1]) + punctuation
+    return '. '.join(sentences[1:n-1]) + punctuation
 
 def convert_newlines(text):
     return text.replace('\\n', '\n').replace('\\r', '\r')
@@ -65,7 +65,7 @@ def char_swap(text):
     return text
 
 def generate_response(prompt):
-    n = random.randint(3,7)
+    n = random.randint(3,5)
     output = get_gpt_output(prompt)
     sequence = get_gpt_sequence(output)
     sentences = split_into_sentences(sequence)
