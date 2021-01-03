@@ -82,12 +82,7 @@ class CryptoMonitor(discord.Client):
                 for diff in price_perc_diff
             ] 
             price_strs = [
-                f"\
-                    {s}\
-                    ({prefixes[i]}\
-                    {price_perc_diff[i]:.5f}%) \
-                    {suffixes[i]}\
-                "
+                f"{s} ({prefixes[i]}{price_perc_diff[i]:.5f}%) {suffixes[i]}"
                 for i, s
                 in enumerate(price_strs)
             ] 
