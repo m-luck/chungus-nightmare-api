@@ -1,7 +1,7 @@
 import random
 import time
 import discord
-import gpt_helpers
+import gptreplyguy.gpt_helpers as gpt_helpers
 
 one_in = 10
 

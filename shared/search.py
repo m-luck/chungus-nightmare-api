@@ -4,9 +4,11 @@ import sys
 from shared import secrets
 import cryptocompare
 import cronus.beat as beat
+from gptreplyguy.gpt_helpers import char_swap, randomize_capitalization
 
 auth = tweepy.AppAuthHandler(secrets.twitter_api_key, secrets.twitter_api_secret)
 api = tweepy.API(auth)
+
 class TwitterMonitor(discord.Client):
 
     def clean_input(self, message):
@@ -22,8 +24,35 @@ class TwitterMonitor(discord.Client):
         ]
         return results
     
-    def get_human_search_results(self, term, count=10):
-        return '\n----------------------------\n'.join(self.search(term, count))
+    def strip_extra(self, text, mentions=True, links=True, hash=True, rt=True):
+        if mentions: 
+            word_list = text.split(' ')
+            text = ' '.join([word for word in word_list if not word.startswith('@')])
+        if links:
+            word_list = text.split(' ')
+            text = ' '.join([word for word in word_list if not word.startswith('http') and not word.startswith('\nhttp')])
+        if hash:
+            word_list = text.split(' ')
+            text = ' '.join([word for word in word_list if not word.startswith('#')])
+        if rt:
+            word_list = text.split(' ')
+            text = ' '.join([word for word in word_list if not word.startswith('RT')])
+        word_list = text.split(' ')
+        text = ' '.join([word for word in word_list if not word.endswith('…') and not word.startswith('&')])
+        return text
+
+    def get_human_search_results(self, term, count=1):
+        res = self.search(term, count)
+        if res:
+            return char_swap(
+                randomize_capitalization(
+                    '\n----------------------------\n'.join(
+                        [self.strip_extra(seq) for seq in res]
+                    )
+                )
+            )
+        else: 
+            return " .."
 
     async def on_ready(self):
         print('Logged in as')
@@ -34,7 +63,7 @@ class TwitterMonitor(discord.Client):
     async def on_message(self, message):
         if (
             message.author.id == self.user.id or 
-            not message.channel.name.startswith('fiat-fuckboy')
+            not message.channel.name.startswith('chungus')
         ):
             return
 
@@ -43,13 +72,14 @@ class TwitterMonitor(discord.Client):
         async with message.channel.typing():
             response = self.get_human_search_results(prompt)
             print("RESPONSE:", response)
+            if not response: 
+                response = ".."
             await message.channel.send(response)
 
 
 class CryptoMonitor(discord.Client):
 
-
-    alarm_threshold = 0.2
+    alarm_threshold = 1.2  # 1% in 20 minutes is yuge.
     alarm_emoji = '💥' 
     tickers = [
         'BTC',
@@ -99,7 +129,7 @@ class CryptoMonitor(discord.Client):
         print('------')
 
         old_vals = await self.act()
-        every_n_seconds = 120
+        every_n_seconds = 20 * 60
         beat.set_rate(1/every_n_seconds)
         while beat.true():
             new_vals = await self.act(old_vals=old_vals)
