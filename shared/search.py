@@ -93,6 +93,7 @@ class CryptoMonitor(discord.Client):
 
     rh_user = secrets.rh_user
     rh_pw = secrets.rh_pw
+    rh.login(rh_user, rh_pw, expiresIn=3600 * 24, by_sms=True)
 
     def get_human_search_results(self, old_vals=None):
         prices = cryptocompare.get_price(self.tickers, curr='USD', full=False)
@@ -151,7 +152,7 @@ class CryptoMonitor(discord.Client):
             count += tweet_monitor_interval
             await self.monitor_memelon()
             if count % every_n_seconds == 0:
-                rh.login(rh_user, rh_pw, expiresIn=3600 * 24, by_sms=True)
+                rh.login(self.rh_user, self.rh_pw, expiresIn=3600 * 24, by_sms=True)
                 new_vals = await self.act(old_vals=old_vals)
                 old_vals = new_vals
             time.sleep(tweet_monitor_interval) 
