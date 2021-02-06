@@ -79,11 +79,12 @@ class TwitterMonitor(discord.Client):
 
 class CryptoMonitor(discord.Client):
 
-    alarm_threshold = 1.2  # 1% in 20 minutes is yuge.
+    alarm_threshold = 1.2  # 1.2% in 20 minutes is yuge.
     alarm_emoji = '💥' 
     tickers = [
         'BTC',
         'ETH',
+	'DOGE'
     ]
 
     def get_human_search_results(self, old_vals=None):
@@ -133,7 +134,7 @@ class CryptoMonitor(discord.Client):
                 if channel.name == 'shitcoins-hyperchin-x':
                     with channel.typing():
                         await channel.send(
-                            f'This shitptocurrency markets are open and it is daytime in California. Now changing update interval to 20 minutes -\If percentage changes more than {self.alarm_threshold:.2f} percent within this interval, it will 💥.')
+                            f'Now changing update interval to 20 minutes. If percentage changes more than {self.alarm_threshold:.2f} percent within this interval, it will append 💥.')
         old_vals = await self.act()
         every_n_seconds = 20 * 60
         beat.set_rate(1/every_n_seconds)
