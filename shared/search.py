@@ -1,10 +1,12 @@
-import discord
-import tweepy
-import sys
-from shared import secrets
-import cryptocompare
-import cronus.beat as beat
 from gptreplyguy.gpt_helpers import char_swap, randomize_capitalization
+from shared import secrets
+import cronus.beat as beat
+import cryptocompare
+import discord
+import robin_stocks as rh
+import sys
+import time
+import tweepy
 
 auth = tweepy.AppAuthHandler(secrets.twitter_api_key, secrets.twitter_api_secret)
 api = tweepy.API(auth)
@@ -84,8 +86,15 @@ class CryptoMonitor(discord.Client):
     tickers = [
         'BTC',
         'ETH',
-	'DOGE'
+        'DOGE'
     ]
+    channel_str = 'shitcoins-hyperchin-x-test'
+    last_memelon = None
+
+    rh_user = secrets.rh_user
+    rh_pw = secrets.rh_pw
+    rh.login(rh_user, rh_pw, expiresIn=3600 * 24, by_sms=True)
+
 
     def get_human_search_results(self, old_vals=None):
         prices = cryptocompare.get_price(self.tickers, curr='USD', full=False)
@@ -131,27 +140,55 @@ class CryptoMonitor(discord.Client):
 
         for guild in self.guilds:
             for channel in guild.text_channels:
-                if channel.name == 'shitcoins-hyperchin-x':
+                if channel.name == self.channel_str:
                     with channel.typing():
                         await channel.send(
-                            f'Now changing update interval to 20 minutes. If percentage changes more than {self.alarm_threshold:.2f} percent within this interval, it will append 💥.')
+                            f'Now changing update interval to 20 minutes. If percentage changes more than {self.alarm_threshold:.2f} percent within this interval, it will append 💥. This bot will also execute a DOGE buy if memelongated muskrat tweets (anything, just in case it\'s doge-related) and sell the same amount after a minute in order to sell on the pump.')
         old_vals = await self.act()
         every_n_seconds = 20 * 60
-        beat.set_rate(1/every_n_seconds)
-        while beat.true():
-            new_vals = await self.act(old_vals=old_vals)
-            old_vals = new_vals
-            beat.sleep() 
+        tweet_monitor_interval = 10
+        beat.set_rate(1/tweet_monitor_interval)
+        count = tweet_monitor_interval
+        while True:
+            count += tweet_monitor_interval
+            await self.monitor_memelon()
+            if count % every_n_seconds == 0:
+                new_vals = await self.act(old_vals=old_vals)
+                old_vals = new_vals
+            time.sleep(tweet_monitor_interval) 
 
     async def act(self, old_vals=None):
         prices, old_vals, in_alarm = self.get_human_search_results(old_vals)
         text_channel_list = []
         for guild in self.guilds:
             for channel in guild.text_channels:
-                if channel.name == 'shitcoins-hyperchin-x':
+                if channel.name == self.channel_str:
                     with channel.typing():
                         await channel.send(prices)
                         return old_vals
+
+    async def the_doge_operation(self):
+        doge = "DOGE"
+        rh.orders.order_buy_crypto_by_quantity(doge, 2 * 4269, timeInForce='gtc')
+        print("bought")
+        time.sleep(60)
+        rh.orders.order_sell_crypto_by_quantity(doge, 2 * 4269, timeInForce='gtc')
+        print("sold")
+
+    async def monitor_memelon(self):
+        tweetL = api.user_timeline(screen_name='elonmusk', tweet_mode="extended", exclude_replies=True, count=1)
+        last_tweet = tweetL[0].full_text
+        print(last_tweet)
+        if last_tweet != self.last_memelon and self.self_memelon != None:
+            self.last_memelon = last_tweet
+            for guild in self.guilds:
+                for channel in guild.text_channels:
+                    if channel.name == self.channel_str:
+                        with channel.typing():
+                            await self.the_doge_operation()
+                            msg = "Bought and sold 2 x 4269 shares of DOGE."
+                            await channel.send("\"" + last_tweet + "\"\n\n" + msg)
+
     
     # async def on_message(self, message):
     #     if (
