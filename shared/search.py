@@ -143,7 +143,7 @@ class CryptoMonitor(discord.Client):
                 if channel.name == self.channel_str:
                     with channel.typing():
                         await channel.send(
-                            f'Now changing update interval to 20 minutes. If percentage changes more than {self.alarm_threshold:.2f} percent within this interval, it will append 💥. This bot will also execute a DOGE buy if memelongated muskrat tweets (anything, just in case it\'s doge-related) and sell the same amount after a minute in order to sell on the pump.')
+                            f'Now changing update interval to 20 minutes. If percentage changes more than {self.alarm_threshold:.2f} percent within this interval, it will append 💥. \n\nThis bot will also execute a DOGE buy if memelongated muskrat tweets (anything, just in case it\'s doge-related) and sell the same amount after a minute in order to sell on the pump. It will always do a test purchase when it starts.')
         old_vals = await self.act()
         every_n_seconds = 20 * 60
         tweet_monitor_interval = 10
@@ -179,7 +179,7 @@ class CryptoMonitor(discord.Client):
         tweetL = api.user_timeline(screen_name='elonmusk', tweet_mode="extended", exclude_replies=True, count=1)
         last_tweet = tweetL[0].full_text
         print(last_tweet)
-        if (last_tweet != self.last_memelon) and (self.last_memelon != None):
+        if (last_tweet != self.last_memelon):
             self.last_memelon = last_tweet
             for guild in self.guilds:
                 for channel in guild.text_channels:
