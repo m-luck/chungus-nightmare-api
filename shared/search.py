@@ -88,7 +88,7 @@ class CryptoMonitor(discord.Client):
         'ETH',
         'DOGE'
     ]
-    channel_str = 'shitcoins-hyperchin-x-test'
+    channel_str = 'shitcoins-hyperchin-x'
     last_memelon = None
 
     rh_user = secrets.rh_user
