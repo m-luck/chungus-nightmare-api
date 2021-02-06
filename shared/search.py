@@ -179,7 +179,7 @@ class CryptoMonitor(discord.Client):
         tweetL = api.user_timeline(screen_name='elonmusk', tweet_mode="extended", exclude_replies=True, count=1)
         last_tweet = tweetL[0].full_text
         print(last_tweet)
-        if last_tweet != self.last_memelon and self.self_memelon != None:
+        if (last_tweet != self.last_memelon) and (self.last_memelon != None):
             self.last_memelon = last_tweet
             for guild in self.guilds:
                 for channel in guild.text_channels:
